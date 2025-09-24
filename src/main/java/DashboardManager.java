@@ -1,5 +1,3 @@
-package frc.robot;
-
 import swervelib.telemetry.SwerveDriveTelemetry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;

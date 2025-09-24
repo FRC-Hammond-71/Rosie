@@ -97,7 +97,7 @@ public class Limelight {
             this.lastUpdatedAt = Timer.getFPGATimestamp() - Robot.kDefaultPeriod;
         }
         double elapsedSecondsSinceUpdated = Timer.getFPGATimestamp() - this.lastUpdatedAt;
-        double MAX_DISPLACEMENT_ALLOWED = (Constants.kMaxSpeed * elapsedSecondsSinceUpdated) + displacementErrorMargin;
+        double MAX_DISPLACEMENT_ALLOWED = (Constants.GetmaximumSpeed() * elapsedSecondsSinceUpdated) + displacementErrorMargin;
     
         
         // Outlier rejection

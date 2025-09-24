@@ -5,10 +5,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.ExampleSubsystem;
+import frc.robot.subsystems.ProgrammingExampleSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
 /**
@@ -20,9 +22,12 @@ import frc.robot.subsystems.SwerveDriveSubsystem;
  */
 public class Robot extends TimedRobot {
 	private Command m_autonomousCommand;
-
 	private final RobotContainer m_robotContainer;
 	private final ExampleSubsystem example;
+	private final ProgrammingExampleSubsystem programmingExampleSubsystem;
+	private final XboxController controller;
+
+
 	// private final SwerveDriveSubsystem swerve;
 
 	/**
@@ -31,12 +36,14 @@ public class Robot extends TimedRobot {
 	 * initialization code.
 	 */
 	public Robot() {
+		controller = new XboxController(0);
 		// Instantiate our RobotContainer. This will perform all our button bindings,
 		// and put our
 		// autonomous chooser on the dashboard.
 		m_robotContainer = new RobotContainer();
 
 		example = new ExampleSubsystem();
+		programmingExampleSubsystem = new ProgrammingExampleSubsystem();
 		// swerve = new SwerveDriveSubsystem();
 
 		
@@ -109,7 +116,16 @@ public class Robot extends TimedRobot {
 	/** This function is called periodically during operator control. */
 	@Override
 	public void teleopPeriodic() {
-
+		if (controller.getAButton())
+		{
+			programmingExampleSubsystem.intake();
+		}
+		if (controller.getBButton()) {
+			programmingExampleSubsystem.score();
+		}
+		else {
+			programmingExampleSubsystem.stop();
+		}
 	}
 
 	@Override

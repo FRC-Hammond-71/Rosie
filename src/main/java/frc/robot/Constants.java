@@ -15,13 +15,9 @@ package frc.robot;
  */
 public final class Constants {
 
+	public static final double maximumSpeed = 5.3;
+	public static final double maximumAngleSpeed = 20;
 
-	//DRIVETRAIN RELATED
-	public static final double kMaxSpeed = 5.3;
-
-
-
-	
 	public static class OperatorConstants {
 		public static final int kDriverControllerPort = 0;
 	}
@@ -30,5 +26,13 @@ public final class Constants {
 	public static class ComponentIDs {
 		public static final int PigeonID = 20;
 		
+	}
+
+	public static double GetmaximumSpeed() {
+		return maximumSpeed;
+	}
+
+	public static double GetmaximumangularSpeed() {
+		return maximumAngleSpeed;
 	}
 }

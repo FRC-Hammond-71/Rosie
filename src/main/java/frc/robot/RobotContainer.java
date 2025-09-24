@@ -5,8 +5,6 @@
 package frc.robot;
 
 import frc.robot.Constants.OperatorConstants;
-import frc.robot.limelight.Limelight;
-import frc.robot.limelight.LimelightHelpers;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
 import edu.wpi.first.math.MathUtil;
@@ -43,8 +41,6 @@ public class RobotContainer {
 	public RobotContainer() {
 
 		m_swerve = new SwerveDriveSubsystem();		
-		//Limelight.registerDevice("name");
-
 
 		// elevator = new ElevatorSubsystem(20);
 		// intake = new IntakeSubsystem(21);
@@ -52,12 +48,11 @@ public class RobotContainer {
 		// target height
 
 		m_swerve.setDefaultCommand(m_swerve.driveCommand(
-				() -> -MathUtil.applyDeadband(m_driverController.getRawAxis(1), 0.1),
-				() -> -MathUtil.applyDeadband(m_driverController.getRawAxis(0), 0.1),
-				() -> MathUtil.applyDeadband(m_driverController.getRawAxis(4), 0.1)// ,
-		// m_driverController.getRawAxis(2) > .5
-
-		));
+			() -> -MathUtil.applyDeadband(m_driverController.getRawAxis(1), 0.0), // forward/back (invert)
+			() ->  MathUtil.applyDeadband(m_driverController.getRawAxis(0),0.1), // left/right (no invert)
+			() -> -MathUtil.applyDeadband(m_driverController.getRawAxis(4), 0.0)  // rotation (usually invert)
+		 ));
+		    
 
 		// Configure the trigger bindings
 		configureBindings();
@@ -85,9 +80,4 @@ public class RobotContainer {
 		m_driverController.x().onTrue((Commands.runOnce(m_swerve::zeroGyro)));
 	
 	}
-
-
-	
-
-
 }

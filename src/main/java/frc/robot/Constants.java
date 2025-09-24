@@ -15,12 +15,18 @@ package frc.robot;
  */
 public final class Constants {
 
-	public static final double maximumSpeed = 5.3;
 
+	//DRIVETRAIN RELATED
+	public static final double kMaxSpeed = 5.3;
+
+
+
+	
 	public static class OperatorConstants {
 		public static final int kDriverControllerPort = 0;
 	}
 
+	//ENCODER RELATED
 	public static class ComponentIDs {
 		public static final int PigeonID = 20;
 		

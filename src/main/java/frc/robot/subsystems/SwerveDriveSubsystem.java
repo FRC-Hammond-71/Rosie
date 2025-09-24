@@ -31,7 +31,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 
     public SwerveDriveSubsystem(){
 
-        double maximumSpeed = Constants.maximumSpeed;
+        double maximumSpeed = Constants.kMaxSpeed;
         try{
              File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(),"swerve");
             swerveDrive = new SwerveParser(swerveJsonDirectory).createSwerveDrive(maximumSpeed);
@@ -65,9 +65,17 @@ public class SwerveDriveSubsystem extends SubsystemBase {
         swerveDrive.zeroGyro();
         swerveDrive.setGyro(new Rotation3d(0,0,0));
     }
+
+    
+
+
+
+
     @Override
     public void periodic() {
-        SmartDashboard.putNumberArray("Measured States", swervelib.telemetry.SwerveDriveTelemetry.measuredChassisSpeeds);
-        SmartDashboard.putNumberArray("SwerveModuleStates", swervelib.telemetry.SwerveDriveTelemetry.measuredStates);
+        SmartDashboard.putNumberArray("Chassis Speed", swervelib.telemetry.SwerveDriveTelemetry.measuredChassisSpeeds);
+        SmartDashboard.putNumberArray("Swerve Module States", swervelib.telemetry.SwerveDriveTelemetry.measuredStates);
     }
+
+
 }

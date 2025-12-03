@@ -65,7 +65,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 			// swerveDrive.setChassisDiscretization(true, .02);
 			swerveDrive.setHeadingCorrection(true);
 			swerveDrive.setCosineCompensator(true);
-			swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d("limelight"), Timer.getFPGATimestamp()); 
+
 			// NOTE FROM AARON: addVisionMeasurement should be called in the periodic function!!!
 			// Use LimelightHelpers.getBotPoseEstimate_wpiBlue instead since it returns a PoseEstimate (Which includes pose, timestamp, and latency).
 			// You can see an example of this in Limelight.getPoseEstimate (/Limelight/Limelight.java).
@@ -197,6 +197,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 		SmartDashboard.putNumberArray("Measured States", swervelib.telemetry.SwerveDriveTelemetry.measuredChassisSpeeds);
 		SmartDashboard.putNumberArray("SwerveModuleStates", swervelib.telemetry.SwerveDriveTelemetry.measuredStates);
 		SmartDashboard.putNumberArray("Vision Estimated Pose", LimelightHelpers.getBotPose("limelight"));
+		swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d("limelight"), Timer.getFPGATimestamp()); 
 
 	}
 

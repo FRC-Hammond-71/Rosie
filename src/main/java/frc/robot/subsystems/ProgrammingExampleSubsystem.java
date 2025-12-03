@@ -2,7 +2,12 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.platform.DeviceType;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkBaseConfig;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.servohub.ServoHub.ResetMode;
+import com.revrobotics.spark.SparkBase;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkBase.PersistMode;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,6 +40,11 @@ public class ProgrammingExampleSubsystem extends SubsystemBase {
     public ProgrammingExampleSubsystem() {
         intakeMotor = new SparkMax(30, MotorType.kBrushless);
         armMotor = new SparkMax(41, MotorType.kBrushless);
+
+        SparkBaseConfig intakeConfig = new SparkMaxConfig();
+        intakeConfig.smartCurrentLimit(80);
+        
+        intakeMotor.configure(intakeConfig, SparkBase.ResetMode.kNoResetSafeParameters, PersistMode.kNoPersistParameters);
     }
 
     // Example intake function

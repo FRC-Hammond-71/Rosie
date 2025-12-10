@@ -55,7 +55,6 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 		// simulations since it causes discrepancies not seen in real life.
 		// swerveDrive.setGyroOffset(new Rotation3d(0,0,-154.69));
 		Limelight.registerDevice("limelight");
-		setupPathPlanner();
 		double maximumSpeed = Constants.maximumSpeed;
 		try {
 			File swerveJsonDirectory = new File(Filesystem.getDeployDirectory(), "swerve");
@@ -65,7 +64,8 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 			// swerveDrive.setChassisDiscretization(true, .02);
 			swerveDrive.setHeadingCorrection(true);
 			swerveDrive.setCosineCompensator(true);
-
+			// swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d("limelight"), Timer.getFPGATimestamp()); 
+			LimelightHelpers.getBotPoseEstimate_wpiBlue(getName());
 			// NOTE FROM AARON: addVisionMeasurement should be called in the periodic function!!!
 			// Use LimelightHelpers.getBotPoseEstimate_wpiBlue instead since it returns a PoseEstimate (Which includes pose, timestamp, and latency).
 			// You can see an example of this in Limelight.getPoseEstimate (/Limelight/Limelight.java).
@@ -78,7 +78,7 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 
 			throw new RuntimeException(e);
 		}
-
+		setupPathPlanner();
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -136,8 +136,13 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 	}
 
 	public ChassisSpeeds getRelativeSpeeds() {
-		return swerveDrive.getFieldVelocity(); // NOTE FROM AARON: This returns field-relative velocity not ROBOT-relative velocity!
+		return swerveDrive.getRobotVelocity(); // Check exact swervelib API name
 	}
+	
+	public void resetPose(Pose2d pose) {
+		swerveDrive.resetOdometry(pose);
+	}
+	
 
 	public Pose2d getPose() {
 		if (Robot.isSimulation()) {
@@ -151,38 +156,47 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 		try {
 			config = RobotConfig.fromGUISettings();
 		} catch (Exception e) {
-			// Handle exception as needed
 			e.printStackTrace();
 			return;
 		}
+	
 		AutoBuilder.configure(
-				this::getPose,
-				(pose) -> {
-					// this.resetPose(pose); 
-					// NOTE FROM AARON: This should only be commented out if we already know where the robot is.
-					// An initial position is never set before this so the robot would do wacky stuff.
-				},
-				this::getRelativeSpeeds, // NOTE FROM AARON: This requires robot-relative velocity not field-relative! (Check getRelativeSpeeds comments)
-				(speeds) -> this.driveFieldOriented(speeds), // NOTE FROM AARON: This functions expects to run in robot-relative mode NOT field-relative.
-				new PPHolonomicDriveController(
-					new PIDConstants(3.3, 0.0, 0), // Translation PID constants
-					new PIDConstants(Math.PI * 1.6, 0.0, 0) // Rotation PID constants
-				),
-				config,
-				() -> {
-					// Boolean supplier that controls when the path will be mirrored for the red
-					// alliance
-					// This will flip the path being followed to the red side of the field.
-					// THE ORIGIN WILL REMAIN ON THE BLUE SIDE
-
-					var alliance = DriverStation.getAlliance();
-					if (alliance.isPresent()) {
-						return alliance.get() == DriverStation.Alliance.Red;
-					}
-					return false;
-				},
-				this);
+			this::getPose,
+			this::resetPose,
+			this::getRelativeSpeeds,
+	
+			(speeds, ff) -> {
+				swerveDrive.drive(
+					new Translation2d(
+						speeds.vxMetersPerSecond,
+						speeds.vyMetersPerSecond
+					),
+					speeds.omegaRadiansPerSecond,
+					false, // robot relative
+					true
+				);
+			},
+	
+			// PathFollowing controller
+			new PPHolonomicDriveController(
+				new PIDConstants(3.3, 0, 0),
+				new PIDConstants(Math.PI * 1.6, 0, 0)
+			),
+	
+			// Robot config
+			config,
+	
+			// Should flip for red alliance?
+			() -> {
+				var alliance = DriverStation.getAlliance();
+				return alliance.isPresent() && alliance.get() == DriverStation.Alliance.Red;
+			},
+	
+			// Subsystem
+			this
+		);
 	}
+	
 
 	public SwerveDrive getSwerveDrive() {
 		return swerveDrive;
@@ -197,7 +211,6 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 		SmartDashboard.putNumberArray("Measured States", swervelib.telemetry.SwerveDriveTelemetry.measuredChassisSpeeds);
 		SmartDashboard.putNumberArray("SwerveModuleStates", swervelib.telemetry.SwerveDriveTelemetry.measuredStates);
 		SmartDashboard.putNumberArray("Vision Estimated Pose", LimelightHelpers.getBotPose("limelight"));
-		swerveDrive.addVisionMeasurement(LimelightHelpers.getBotPose2d("limelight"), Timer.getFPGATimestamp()); 
 
 	}
 

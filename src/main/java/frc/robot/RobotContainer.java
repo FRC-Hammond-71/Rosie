@@ -39,8 +39,7 @@ public class RobotContainer {
 	private final CommandXboxController m_driverController = new CommandXboxController(
 			OperatorConstants.kDriverControllerPort);
 	// private ElevatorSubsystem elevator;
-
-	// private final Joystick m_driverController = new Joystick(0);
+// private final Joystick m_driverController = new Joystick(0);
 	// private final Button robotCentric = new m_driverController.getAsBoolean();
 	// SendableChooser<Command> autoChooser;
 
@@ -52,23 +51,24 @@ public class RobotContainer {
 		m_swerve = new SwerveDriveSubsystem();
 		autoChooser = AutoBuilder.buildAutoChooser();
 		SmartDashboard.putData("Auto Mode", autoChooser);
-
 		// elevator = new ElevatorSubsystem(20);
 		// Command moveElevatorToTop = elevator.goToSetpointCommand(50.0); // Example
 		// target height
 		SwerveInputStream driveStream = SwerveInputStream.of(m_swerve.getSwerveDrive(),
-				() -> m_driverController.getLeftY(),
-				() -> m_driverController.getLeftX()) // Axis which give the desired translational angle and speed.
-				.withControllerRotationAxis(m_driverController::getRightX) // Axis which give the desired angular velocity
-				.deadband(0.01) // Controller deadband
-				.scaleTranslation(0.8) // Scaled controller translation axis
-				.allianceRelativeControl(true); // Alliance relative controls. (A utility to automatically convert inversions)
+        () -> m_driverController.getLeftY(),
+        () -> m_driverController.getLeftX())
+		.withControllerRotationAxis(() -> -m_driverController.getRightX())
+		.deadband(0.01)
+        .scaleTranslation(0.8)
+        .allianceRelativeControl(true);
 
-		SwerveInputStream driveDirectAngle = driveStream.copy() // Copy the stream so further changes do not affect
-																// driveAngularVelocity
-				.withControllerHeadingAxis(m_driverController::getRightX,
-						m_driverController::getRightY) // Axis which give the desired heading angle using trigonometry.
-				.headingWhile(true); // Enable heading based control
+SwerveInputStream driveDirectAngle = driveStream.copy()
+        .withControllerHeadingAxis(
+            () -> -m_driverController.getRightX(), // inverted
+            () -> m_driverController.getRightY()
+        )
+        .headingWhile(true);
+
 
 		m_swerve.setDefaultCommand(
 				m_swerve.driveCommand(driveStream) // or driveDirectAngle
@@ -95,7 +95,7 @@ public class RobotContainer {
 	 */
 	private void configureBindings() {
 
-		// driverController.x().onTrue((Commands.runOnce(m_swerve::zeroGyro)));
+		m_driverController.x().onTrue((Commands.runOnce(m_swerve::zeroGyro)));
 
 	}
 

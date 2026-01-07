@@ -62,7 +62,7 @@ public class RobotContainer {
         .scaleTranslation(0.8)
         .allianceRelativeControl(true);
 
-SwerveInputStream driveDirectAngle = driveStream.copy()
+		SwerveInputStream driveDirectAngle = driveStream.copy()
         .withControllerHeadingAxis(
             () -> -m_driverController.getRightX(), // inverted
             () -> m_driverController.getRightY()

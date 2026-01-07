@@ -215,7 +215,6 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 		SmartDashboard.putNumberArray("Measured States", swervelib.telemetry.SwerveDriveTelemetry.measuredChassisSpeeds);
 		SmartDashboard.putNumberArray("SwerveModuleStates", swervelib.telemetry.SwerveDriveTelemetry.measuredStates);
 		SmartDashboard.putNumberArray("Vision Estimated Pose", LimelightHelpers.getBotPose("limelight"));
-
 	}
 
 	public Command driveCommand(SwerveInputStream inputStream) {

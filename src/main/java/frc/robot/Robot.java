@@ -21,10 +21,15 @@ import swervelib.SwerveInputStream;
  * this project, you must also update the Main.java file in the project.
  */
 public class Robot extends TimedRobot {
+
+	//#region Subsystems
+
+
 	private Command m_autonomousCommand;
 	private final RobotContainer m_robotContainer;
 	private final ProgrammingExampleSubsystem programmingExampleSubsystem;
 	private final XboxController controller;
+	//#endregion
 
 
 	// private final SwerveDriveSubsystem swerve;
@@ -42,7 +47,7 @@ public class Robot extends TimedRobot {
 		m_robotContainer = new RobotContainer();
 		programmingExampleSubsystem = new ProgrammingExampleSubsystem();
 		// swerve = new SwerveDriveSubsystem();
-
+		
 		
 	}
 

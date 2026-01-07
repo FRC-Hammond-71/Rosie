@@ -65,7 +65,6 @@ public class Limelight {
         this.yFilter.reset();
     }
 
-    // https://www.chiefdelphi.com/t/timestamp-parameter-when-adding-limelight-vision-to-odometry/455908/2
     // TODO: Include JSON Parsing
     public double getLatencyInSeconds()
     {

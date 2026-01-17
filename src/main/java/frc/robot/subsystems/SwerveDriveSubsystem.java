@@ -1,11 +1,14 @@
 package frc.robot.subsystems;
 
+import static edu.wpi.first.units.Units.Meter;
+import static edu.wpi.first.units.Units.Meters;
 import static edu.wpi.first.units.Units.Rotation;
 
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.function.DoubleSupplier;
+import java.util.function.Supplier;
 
 import com.ctre.phoenix6.hardware.Pigeon2;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -28,13 +31,17 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import frc.robot.Constants;
 import frc.robot.Robot;
+import frc.robot.Constants.DistanceA;
 import swervelib.imu.Pigeon2Swerve;
 import swervelib.math.SwerveMath;
 import swervelib.SwerveDrive;
 import swervelib.SwerveInputStream;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.units.Unit;
+import edu.wpi.first.units.measure.Distance;
 import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import swervelib.parser.SwerveParser;
@@ -201,6 +208,67 @@ public class SwerveDriveSubsystem extends SubsystemBase {
 		);
 	}
 	
+
+
+	public Distance getShotDistance(Translation2d targetPose) {
+        Pose2d drivePose = getPose();
+        Distance centerToTargetMeters = Meters.of(drivePose.getTranslation().getDistance(targetPose));
+        Distance centerToShooterMeters = Constants.shooterSideOffset;
+    	double shooterToTargetMeters = Math.sqrt(Math.pow(centerToTargetMeters.magnitude(), 2.0) - Math.pow(centerToShooterMeters.magnitude(), 2.0));
+        return Meters.of(shooterToTargetMeters);
+	}
+
+    public Distance getShotDistance() {
+        return getShotDistance(Constants.getHubPose().toPose2d().getTranslation());
+    }
+
+    public Distance getFerryDistance() {
+        return getShotDistance(Constants.getFerryPose().toPose2d().getTranslation());
+    }
+
+    // public Command alignDrive(CommandXboxController controller, Supplier<Pose2d> targetPoseSupplier) {
+    //     return applyRequest(() -> {
+    //         double controllerVelX = -controller.getLeftY();
+    //         double controllerVelY = -controller.getLeftX();
+
+    //         Pose2d drivePose = getState().Pose;
+    //         Pose2d targetPose = targetPoseSupplier.get();
+    //         double shooterOffset = -DriveConstants.shooterSideOffset.in(Units.Meters);
+    //         double targetDistance = drivePose.getTranslation().getDistance(targetPose.getTranslation());
+    //         double shooterAngleRads = Math.acos(shooterOffset / targetDistance); 
+    //         Rotation2d shooterAngle = Rotation2d.fromRadians(shooterAngleRads);
+    //         Rotation2d offsetAngle = Rotation2d.kCCW_90deg.minus(shooterAngle);
+    //         Rotation2d desiredAngle = offsetAngle.plus(drivePose.relativeTo(targetPose).getTranslation().getAngle()).plus(Rotation2d.k180deg);
+    //         desiredAngle = desiredAngle.plus(Rotation2d.k180deg);
+    //         Rotation2d currentAngle = drivePose.getRotation();
+    //         Rotation2d deltaAngle = currentAngle.minus(desiredAngle);
+    //         double wrappedAngleDeg = MathUtil.inputModulus(deltaAngle.getDegrees(), -180.0, 180.0);
+
+    //         if (
+    //             (Math.abs(wrappedAngleDeg) < DriveConstants.epsilonAngleToGoal.in(Units.Degrees)) // if facing goal already
+    //             && Math.hypot(controllerVelX, controllerVelY) < ControlBoardConstants.stickDeadband) {
+    //                 return new SwerveRequest.SwerveDriveBrake();
+    //             } else {
+    //             double rotationalRate = DriveConstants.rotationController.calculate(currentAngle.getRadians(), desiredAngle.getRadians());
+    //             return alignRequest.withVelocityX(controllerVelX * DriveConstants.maxSpeed) // Drive forward with negative Y (forward)
+    //             .withVelocityY(-controller.getLeftX() * DriveConstants.maxSpeed) // Drive left with negative X (left)
+    //             .withRotationalRate(rotationalRate * DriveConstants.maxAngularRate); // Use angular rate for rotation
+    //         }
+    //     });
+    // }
+
+    // logging stuff
+	//@Override 
+    // public void log(String path) {
+    //     logPose(path);
+    //     logModules(path + "/Modules");
+    // }
+
+    // public void logPose(String path) {
+    //     Logger.log(path, "Pose", getState().Pose);
+    //     Logger.log(path, "Shooter Pose", getState().Pose.transformBy(DriveConstants.shooterTransform));
+    // }
+
 
 	public SwerveDrive getSwerveDrive() {
 		return swerveDrive;
